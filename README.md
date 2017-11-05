@@ -25,4 +25,6 @@ https://en.wikipedia.org/wiki/In-memory_database
 
 https://en.wikipedia.org/wiki/Hash_list
 
+https://en.wikipedia.org/wiki/Builder_pattern
+
 inspired by https://realm.io/
