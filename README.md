@@ -17,7 +17,7 @@ The database will contain the following components:
 
 - DatabaseManager - object that handles the queries for the database;
 
-- DatabaseQuaryBuilder - basic query builder
+- DatabaseQueryBuilder - basic query builder
 
 # Documentation
 
