@@ -12,6 +12,9 @@ The database will contain the following components:
 - DatabaseQuaryBuilder - basic query builder
 
 # Documentation
+
 https://en.wikipedia.org/wiki/In-memory_database
+
 https://en.wikipedia.org/wiki/Hash_list
+
 inspired by https://realm.io/
