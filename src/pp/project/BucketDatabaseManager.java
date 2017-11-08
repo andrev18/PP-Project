@@ -13,29 +13,29 @@ public class BucketDatabaseManager {
     }
 
 
-    public QueryBuilder where(Class collectionName) {
-        return new QueryBuilder(collectionName);
+    public <E> QueryBuilder<E> where(Class<E> collectionName) {
+        return new QueryBuilder<E>(collectionName);
     }
 
 
-    public class QueryBuilder {
-        private final Class collectionName;
+    public class QueryBuilder<E> {
+        private final Class<E> collectionName;
 
-        public QueryBuilder(Class collectionName) {
+        public QueryBuilder(Class<E> collectionName) {
             this.collectionName = collectionName;
 
         }
 
-        public FilterBuilder equalsTo(String fieldName, int value) {
-            return new FilterBuilder(new IntegerFilter(fieldName, value), collectionName);
+        public FilterBuilder<E> equalsTo(String fieldName, int value) {
+            return new FilterBuilder<E>(new IntegerFilter(fieldName, value), collectionName);
         }
 
-        public FilterBuilder equalsTo(String fieldName, String value) {
-            return new FilterBuilder(new StringFilter(fieldName, value), collectionName);
+        public FilterBuilder<E> equalsTo(String fieldName, String value) {
+            return new FilterBuilder<E>(new StringFilter(fieldName, value), collectionName);
         }
 
 
-        public boolean insert(Object object) {
+        public boolean  insert(E object) {
             if (object.getClass() != collectionName) {
                 throw new RuntimeException("Invalid object type " + object.getClass().getName() + " for collection " + collectionName.getName());
             }
@@ -51,11 +51,11 @@ public class BucketDatabaseManager {
         }
     }
 
-    public class FilterBuilder {
+    public class FilterBuilder<E> {
         private final ArrayList<BaseFilter> filters = new ArrayList<>();
         private final Class collectionName;
 
-        public FilterBuilder(BaseFilter filter, Class collectionName) {
+        public FilterBuilder(BaseFilter filter, Class<E> collectionName) {
             this.collectionName = collectionName;
             filters.add(filter);
 
@@ -71,11 +71,11 @@ public class BucketDatabaseManager {
             return this;
         }
 
-        public LinkedList find() {
-            List list = bucketDatabase.getDatabaseSource()
+        public LinkedList<E> find() {
+            List<E> list = (List<E>) bucketDatabase.getDatabaseSource()
                     .getListHolder().get(collectionName);
 
-            LinkedList result = new LinkedList();
+            LinkedList<E> result = new LinkedList();
 
 
             if (list == null) {
@@ -96,7 +96,7 @@ public class BucketDatabaseManager {
                         throw new RuntimeException("Field " + filter.getFieldName() + " not found!");
                     }
                     field.setAccessible(true);
-                    for (Object obj :
+                    for (E obj :
                             list) {
                         String value = null;
                         try {
