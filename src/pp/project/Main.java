@@ -3,6 +3,7 @@ package pp.project;
 import pp.project.model.User;
 
 import java.util.LinkedList;
+import java.util.function.Predicate;
 
 public class Main {
 
@@ -33,6 +34,7 @@ public class Main {
 
         LinkedList<User> usersWithAndreiName = dbManager.where(User.class)
                 .equalsTo("name","Andrei")
+                .equalsTo("age",28)
                 .find();
 
 
@@ -40,6 +42,18 @@ public class Main {
                 usersWithAndreiName) {
             System.out.println(user.getName() + " is " + user.getAge() + " old");
         }
+
+
+        LinkedList<User> userThatStartsWithA = dbManager.where(User.class)
+                .filter(user -> user.getName().startsWith("A"))
+                .find();
+
+
+        for (User user :
+                userThatStartsWithA) {
+            System.out.println(user.getName() + " is " + user.getAge() + " old");
+        }
+
 
 
     }

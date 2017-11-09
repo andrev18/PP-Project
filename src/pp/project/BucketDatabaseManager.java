@@ -1,9 +1,13 @@
 package pp.project;
 
-import java.lang.reflect.Field;
+import pp.project.filters.BaseFilter;
+import pp.project.filters.IntegerFilter;
+import pp.project.filters.StringFilter;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class BucketDatabaseManager {
     private final BucketDatabase bucketDatabase;
@@ -34,8 +38,12 @@ public class BucketDatabaseManager {
             return new FilterBuilder<E>(new StringFilter(fieldName, value), collectionName);
         }
 
+        public PredicateFilterBuilder<E> filter(Predicate<E> predicate) {
+            return new PredicateFilterBuilder<>(predicate,collectionName);
+        }
 
-        public boolean  insert(E object) {
+
+        public boolean insert(E object) {
             if (object.getClass() != collectionName) {
                 throw new RuntimeException("Invalid object type " + object.getClass().getName() + " for collection " + collectionName.getName());
             }
@@ -51,6 +59,37 @@ public class BucketDatabaseManager {
         }
     }
 
+    public class PredicateFilterBuilder<E> {
+        private final Predicate<E> predicate;
+        private final Class collectionName;
+
+        public PredicateFilterBuilder(Predicate<E> predicate, Class collectionName) {
+            this.predicate = predicate;
+            this.collectionName = collectionName;
+        }
+
+        public LinkedList<E> find() {
+            List<E> list = (List<E>) bucketDatabase.getDatabaseSource()
+                    .getListHolder().get(collectionName);
+
+            LinkedList<E> result = new LinkedList();
+
+            if (list == null) {
+                throw new RuntimeException("Collection " + collectionName.getName() + " does not exist!");
+            }
+
+
+            for (E object : list) {
+                if (predicate.test(object)) {
+                    result.add(object);
+                }
+            }
+
+            return result;
+
+        }
+    }
+
     public class FilterBuilder<E> {
         private final ArrayList<BaseFilter> filters = new ArrayList<>();
         private final Class collectionName;
@@ -61,17 +100,17 @@ public class BucketDatabaseManager {
 
         }
 
-        public FilterBuilder equalsTo(String fieldName, int value) {
+        public FilterBuilder<E> equalsTo(String fieldName, int value) {
             filters.add(new IntegerFilter(fieldName, value));
             return this;
         }
 
-        public FilterBuilder equalsTo(String fieldName, String value) {
+        public FilterBuilder<E> equalsTo(String fieldName, String value) {
             filters.add(new StringFilter(fieldName, value));
             return this;
         }
 
-        public LinkedList<E> find() {
+        public <E> LinkedList<E> find() {
             List<E> list = (List<E>) bucketDatabase.getDatabaseSource()
                     .getListHolder().get(collectionName);
 
@@ -82,34 +121,15 @@ public class BucketDatabaseManager {
                 throw new RuntimeException("Collection " + collectionName.getName() + " does not exist!");
             }
 
-            for (BaseFilter filter :
-                    filters) {
 
-                if (filter instanceof StringFilter) {
-                    Field field = null;
-                    try {
-                        field = collectionName.getDeclaredField(filter.getFieldName());
-                    } catch (NoSuchFieldException e) {
-                        e.printStackTrace();
-                    }
-                    if (field == null) {
-                        throw new RuntimeException("Field " + filter.getFieldName() + " not found!");
-                    }
-                    field.setAccessible(true);
-                    for (E obj :
-                            list) {
-                        String value = null;
-                        try {
-                            value = (String) field.get(obj);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                        if (((StringFilter) filter).getValue().equals(value)) {
-                            result.add(obj);
-                        }
+            objectsLoop:
+            for (E object : list) {
+                for (BaseFilter filter : filters) {
+                    if (!filter.evaluate(collectionName, object)) {
+                        continue objectsLoop;
                     }
                 }
-
+                result.add(object);
             }
 
 
@@ -117,41 +137,4 @@ public class BucketDatabaseManager {
         }
     }
 
-    private static abstract class BaseFilter {
-        private final String fieldName;
-
-        protected BaseFilter(String fieldName) {
-            this.fieldName = fieldName;
-        }
-
-        public String getFieldName() {
-            return fieldName;
-        }
-    }
-
-    private static class IntegerFilter extends BaseFilter {
-        private final int value;
-
-        protected IntegerFilter(String fieldValue, int value) {
-            super(fieldValue);
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    private static class StringFilter extends BaseFilter {
-        private final String value;
-
-        protected StringFilter(String fieldValue, String value) {
-            super(fieldValue);
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
 }
