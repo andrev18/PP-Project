@@ -56,5 +56,33 @@ public class Main {
 
 
 
+        LinkedList<User> userWithAgeLessThan = dbManager.where(User.class)
+                .lesserThan("age",26)
+                .find();
+
+
+        System.out.println("Users with age less than "+ 26);
+
+
+        for (User user :
+                userWithAgeLessThan) {
+            System.out.println(user.getName() + " is " + user.getAge() + " old");
+        }
+
+        LinkedList<User> userWithAgeGreatThan = dbManager.where(User.class)
+                .greaterThan("age",26)
+                .find();
+
+
+        System.out.println("Users with age great than "+ 26);
+
+
+        for (User user :
+                userWithAgeGreatThan) {
+            System.out.println(user.getName() + " is " + user.getAge() + " old");
+        }
+
+
+
     }
 }

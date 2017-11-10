@@ -1,8 +1,6 @@
 package pp.project;
 
-import pp.project.filters.BaseFilter;
-import pp.project.filters.IntegerFilter;
-import pp.project.filters.StringFilter;
+import pp.project.filters.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,6 +35,16 @@ public class BucketDatabaseManager {
         public FilterBuilder<E> equalsTo(String fieldName, String value) {
             return new FilterBuilder<E>(new StringFilter(fieldName, value), collectionName);
         }
+
+
+        public FilterBuilder<E> greaterThan(String fieldName, int value){
+            return new FilterBuilder<E>(new GreaterThanIntegerFilter(fieldName, value), collectionName);
+        }
+
+        public FilterBuilder<E> lesserThan(String fieldName, int value){
+            return new FilterBuilder<E>(new LesserThanIntegerFilter(fieldName, value), collectionName);
+        }
+
 
         public PredicateFilterBuilder<E> filter(Predicate<E> predicate) {
             return new PredicateFilterBuilder<>(predicate,collectionName);
@@ -107,6 +115,16 @@ public class BucketDatabaseManager {
 
         public FilterBuilder<E> equalsTo(String fieldName, String value) {
             filters.add(new StringFilter(fieldName, value));
+            return this;
+        }
+
+        public FilterBuilder<E> greaterThan(String fieldName, int value){
+            filters.add(new GreaterThanIntegerFilter(fieldName,value));
+            return this;
+        }
+
+        public FilterBuilder<E> lesserThan(String fieldName, int value){
+            filters.add(new LesserThanIntegerFilter(fieldName,value));
             return this;
         }
 
