@@ -1,16 +1,17 @@
-package pp.project.filters;
+package filters;
+
 
 import java.lang.reflect.Field;
 
-public class IntegerFilter extends BaseFilter {
-    private final int value;
+public class StringFilter extends BaseFilter {
+    private final String value;
 
-    public IntegerFilter(String fieldValue, int value) {
+    public StringFilter(String fieldValue, String value) {
         super(fieldValue);
         this.value = value;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -26,13 +27,13 @@ public class IntegerFilter extends BaseFilter {
             throw new RuntimeException("Field " + getFieldName() + " not found!");
         }
         field.setAccessible(true);
-        Integer value = null;
+        String value = null;
         try {
-            value =  field.getInt(object);
+            value = (String) field.get(object);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        if (getValue() == value) {
+        if (getValue().equals(value)) {
             return true;
         }
         return false;

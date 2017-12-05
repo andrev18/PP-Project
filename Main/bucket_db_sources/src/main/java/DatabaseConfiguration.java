@@ -1,5 +1,3 @@
-package pp.project;
-
 import java.util.HashSet;
 
 public class DatabaseConfiguration {

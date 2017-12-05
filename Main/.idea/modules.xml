@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db_main.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db_main.iml" group="bucket_db" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db_sources.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db_sources.iml" group="bucket_db_sources" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db_sources/bucket_db_sources_main.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db_sources/bucket_db_sources_main.iml" group="bucket_db_sources" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db_sources/bucket_db_sources_test.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db_sources/bucket_db_sources_test.iml" group="bucket_db_sources" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bucket_db_test.iml" filepath="$PROJECT_DIR$/.idea/modules/bucket_db_test.iml" group="bucket_db" />
+    </modules>
+  </component>
+</project>

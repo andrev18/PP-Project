@@ -1,4 +1,4 @@
-package pp.project.filters;
+package filters;
 
 public abstract class BaseFilter {
     private final String fieldName;

@@ -1,6 +1,4 @@
-package pp.project;
-
-import pp.project.filters.*;
+import filters.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

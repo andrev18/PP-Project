@@ -1,0 +1,3 @@
+rootProject.name = 'bucket_db'
+include 'bucket_db_sources'
+
