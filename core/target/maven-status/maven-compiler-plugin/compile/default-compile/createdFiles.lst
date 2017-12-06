@@ -1,0 +1,14 @@
+BucketDatabaseManager$QueryBuilder.class
+notifier/OnCollectionStateChanged.class
+BucketDatabaseManager$FilterBuilder.class
+BucketDatabaseManager$PredicateFilterBuilder.class
+filters/LesserThanIntegerFilter.class
+filters/StringFilter.class
+BucketDatabaseManager.class
+HashList.class
+DatabaseConfiguration.class
+BucketDatabase.class
+filters/GreaterThanIntegerFilter.class
+filters/BaseFilter.class
+filters/IntegerFilter.class
+BucketDatabase$DatabaseConfigurationBuilder.class
