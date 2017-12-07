@@ -1,5 +1,8 @@
 package main;
 
+import annotations.BucketConfig;
+
+import buckets.AppBucketImpl;
 import db.BucketDatabase;
 import db.BucketDatabaseManager;
 import model.User;
@@ -7,6 +10,7 @@ import processor.BucketProcessor;
 
 
 import java.util.LinkedList;
+
 
 
 public class Main {
@@ -18,11 +22,8 @@ public class Main {
 
 
 
-        BucketDatabaseManager dbManager = BucketDatabase
-                .newInstance()
-                .declare()
-                .createCollection(User.class)
-                .end();
+        BucketDatabaseManager dbManager = AppBucketImpl.getInstance();
+
 
 
 

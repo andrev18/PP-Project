@@ -1,2 +1,4 @@
-BuilderProperty.class
-BucketProcessor.class
+annotations/BAO.class
+processor/BucketProcessor.class
+annotations/BucketConfig.class
+annotations/BucketEntity.class

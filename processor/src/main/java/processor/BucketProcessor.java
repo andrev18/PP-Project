@@ -10,45 +10,38 @@ import java.util.stream.Collectors;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.MirroredTypesException;
+import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
+import annotations.BAO;
+import annotations.BucketConfig;
+import annotations.BucketEntity;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.*;
+import db.BucketDatabase;
+import db.BucketDatabaseManager;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class BucketProcessor extends AbstractProcessor {
+    private Filer filer;
 
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        this.filer = processingEnv.getFiler();
+    }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (TypeElement annotation : annotations) {
-
-            Set<? extends Element> annotatedElements = roundEnv.getElementsAnnotatedWith(annotation);
-
-            Map<Boolean, List<Element>> annotatedMethods = annotatedElements.stream().collect(Collectors.partitioningBy(element -> ((ExecutableType) element.asType()).getParameterTypes().size() == 1 && element.getSimpleName().toString().startsWith("set")));
-
-            List<Element> setters = annotatedMethods.get(true);
-            List<Element> otherMethods = annotatedMethods.get(false);
-
-            otherMethods.forEach(element -> processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "@BuilderProperty must be applied to a setXxx method with a single argument", element));
-
-            if (setters.isEmpty()) {
-                continue;
-            }
-
-            String className = ((TypeElement) setters.get(0).getEnclosingElement()).getQualifiedName().toString();
-
-            Map<String, String> setterMap = setters.stream().collect(Collectors.toMap(setter -> setter.getSimpleName().toString(), setter -> ((ExecutableType) setter.asType()).getParameterTypes().get(0).toString()));
-
-            try {
-                writeBuilderFile(className, setterMap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        for (Element element :
+                roundEnv.getElementsAnnotatedWith(BucketConfig.class)) {
+            setupBucketConfigAnnotation(element);
         }
 
         return true;
@@ -57,8 +50,75 @@ public class BucketProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotataions = new LinkedHashSet<String>();
-        annotataions.add(BuilderProperty.class.getCanonicalName());
+        annotataions.add(BucketEntity.class.getCanonicalName());
+        annotataions.add(BAO.class.getCanonicalName());
+        annotataions.add(BucketConfig.class.getCanonicalName());
         return annotataions;
+    }
+
+
+    private void setupBucketConfigAnnotation(Element element) {
+
+
+
+
+        String[] entities = null;
+
+        try {
+            element.getAnnotation(BucketConfig.class).entities();
+        }catch (MirroredTypesException ex){
+            List<TypeMirror> typeMirrors = (List<TypeMirror>) ex.getTypeMirrors();
+
+            if(typeMirrors != null) {
+                entities = new String[typeMirrors.size()];
+                for (int i = 0; i < entities.length; i++) {
+                    entities[i] = typeMirrors.get(i).toString() + ".class";
+                }
+            }
+
+        }
+
+        FieldSpec managerInstanceField = FieldSpec.builder(BucketDatabaseManager.class, "managerInstance", Modifier.PRIVATE, Modifier.STATIC).build();
+
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("getInstance")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .beginControlFlow("if(managerInstance == null)")
+                .addCode("  managerInstance = $T\n" +
+                        "                .newInstance()\n"
+                        +"                .declare()\n", BucketDatabase.class);
+
+        if (entities != null) {
+            for (String entity :
+                    entities) {
+                methodBuilder.addCode("                .createCollection("+entity+")\n");
+            }
+        }
+
+
+        methodBuilder.addCode(
+                "                .end();\n", BucketDatabase.class)
+                .endControlFlow()
+                .addCode("return managerInstance;\n")
+                .returns(BucketDatabaseManager.class)
+                .build();
+
+
+        TypeSpec bucketClass = TypeSpec.classBuilder(element.getSimpleName() + "Impl")
+                .addField(managerInstanceField)
+                .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
+                .addMethod(methodBuilder.build())
+                .build();
+
+
+        JavaFile javaFile = JavaFile.builder("buckets", bucketClass).build();
+
+
+        try {
+            javaFile.writeTo(filer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void writeBuilderFile(String className, Map<String, String> setterMap) throws IOException {

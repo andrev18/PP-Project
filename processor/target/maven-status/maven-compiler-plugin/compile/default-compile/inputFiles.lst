@@ -1,2 +1,4 @@
-/home/avlad/IdeaProjects/Project/processor/src/main/java/BucketProcessor.java
-/home/avlad/IdeaProjects/Project/processor/src/main/java/BuilderProperty.java
+/home/avlad/Projects/PP-Project/processor/src/main/java/annotations/BAO.java
+/home/avlad/Projects/PP-Project/processor/src/main/java/annotations/BucketConfig.java
+/home/avlad/Projects/PP-Project/processor/src/main/java/processor/BucketProcessor.java
+/home/avlad/Projects/PP-Project/processor/src/main/java/annotations/BucketEntity.java
