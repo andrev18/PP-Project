@@ -9,7 +9,7 @@ The base functionalities of the databse will be : insert,delete,update,get.
 
 The whole implementation will be developed around Builder Pattern.
 
-For the database data structure it will be used a HashList.The hash key will be the Collection unique identifier and the List will hold the collection objects.
+For the database data structure it will be used a db.HashList.The hash key will be the Collection unique identifier and the List will hold the collection objects.
 
 The database will contain the following components:
 

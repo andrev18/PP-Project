@@ -1,3 +1,5 @@
+package db;
+
 import java.util.LinkedList;
 
 public class BucketDatabase {
@@ -21,13 +23,13 @@ public class BucketDatabase {
 
 
     public class DatabaseConfigurationBuilder{
-        DatabaseConfigurationBuilder createCollection(Class collection){
+       public DatabaseConfigurationBuilder createCollection(Class collection){
             databaseConfiguration.loadClassType(collection);
             return this;
         }
 
 
-        BucketDatabaseManager end(){
+        public BucketDatabaseManager end(){
 
 
 

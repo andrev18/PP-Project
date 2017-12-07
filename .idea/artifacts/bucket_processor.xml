@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="bucket_processor">
+    <output-path>$PROJECT_DIR$/out/artifacts/bucket_processor</output-path>
+    <root id="archive" name="bucket_processor.jar">
+      <element id="module-output" name="processor" />
+      <element id="dir-copy" path="$PROJECT_DIR$/processor/target/classes/META-INF" />
+    </root>
+  </artifact>
+</component>

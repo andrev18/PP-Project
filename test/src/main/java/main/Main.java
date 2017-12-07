@@ -1,6 +1,10 @@
+package main;
 
-
+import db.BucketDatabase;
+import db.BucketDatabaseManager;
 import model.User;
+import processor.BucketProcessor;
+
 
 import java.util.LinkedList;
 
@@ -11,6 +15,8 @@ public class Main {
 
     public static void main(String[] args) {
 	// write your code here
+
+
 
         BucketDatabaseManager dbManager = BucketDatabase
                 .newInstance()

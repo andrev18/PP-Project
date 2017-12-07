@@ -1,3 +1,5 @@
+package db;
+
 import java.util.HashSet;
 
 public class DatabaseConfiguration {

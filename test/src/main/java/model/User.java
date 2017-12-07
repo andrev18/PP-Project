@@ -1,14 +1,20 @@
 package model;
 
+import processor.BuilderProperty;
+
 public class User {
-    private final String name;
-    private final int age;
+    private String name;
+    private int age;
 
     private int x;
+
+    public User() {
+    }
 
     public User(String name, int age) {
         this.name = name;
         this.age = age;
+
 
 
     }
@@ -32,6 +38,7 @@ public class User {
 
 
 
+    @BuilderProperty
     public void setX(int x) {
         this.x = x;
     }
