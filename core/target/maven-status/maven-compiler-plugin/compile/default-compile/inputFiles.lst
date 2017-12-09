@@ -1,12 +1,13 @@
+/home/avlad/Projects/PP-Project/core/src/main/java/db/filters/LessThanIntegerFilter.java
+/home/avlad/Projects/PP-Project/core/src/main/java/db/BucketDatabase.java
+/home/avlad/Projects/PP-Project/core/src/main/java/db/HashList.java
+/home/avlad/Projects/PP-Project/core/src/main/java/db/BucketDatabaseManager.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/notifier/OnCollectionStateChanged.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/filters/GreaterThanIntegerFilter.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/BucketConfiguration.java
-/home/avlad/Projects/PP-Project/core/src/main/java/db/filters/LesserThanIntegerFilter.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/filters/StringFilter.java
+/home/avlad/Projects/PP-Project/core/src/main/java/db/BaseBao.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/filters/BaseFilter.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/filters/IntegerFilter.java
-/home/avlad/Projects/PP-Project/core/src/main/java/db/BucketDatabase.java
-/home/avlad/Projects/PP-Project/core/src/main/java/db/HashList.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/DatabaseConfiguration.java
 /home/avlad/Projects/PP-Project/core/src/main/java/db/Bucket.java
-/home/avlad/Projects/PP-Project/core/src/main/java/db/BucketDatabaseManager.java

@@ -1,27 +1,20 @@
 package processor;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 
-import annotations.BAO;
-import annotations.BucketConfig;
-import annotations.BucketEntity;
+import annotations.*;
+import db.BaseBao;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
 import db.BucketDatabase;
@@ -31,21 +24,33 @@ import db.BucketDatabaseManager;
 @AutoService(Processor.class)
 public class BucketProcessor extends AbstractProcessor {
     private Filer filer;
+    private Element bucketConfiguration;
+    private Set<? extends Element> baos;
+
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         this.filer = processingEnv.getFiler();
+        this.processingEnv = processingEnv;
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element element :
-                roundEnv.getElementsAnnotatedWith(BucketConfig.class)) {
-            setupBucketConfigAnnotation(element);
+        for (Element element : roundEnv.getElementsAnnotatedWith(BucketConfig.class)) {
+            if (bucketConfiguration == null) {
+                bucketConfiguration = element;
+            } else {
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "There can't be more than 1 BucketConfiguration per project. Found in ", element);
+            }
         }
+
+        baos = roundEnv.getElementsAnnotatedWith(BAO.class);
+
+        setupBucketConfigAnnotation();
 
         return true;
     }
+
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -57,19 +62,19 @@ public class BucketProcessor extends AbstractProcessor {
     }
 
 
-    private void setupBucketConfigAnnotation(Element element) {
 
 
 
+    private void setupBucketConfigAnnotation() {
 
         String[] entities = null;
 
         try {
-            element.getAnnotation(BucketConfig.class).entities();
-        }catch (MirroredTypesException ex){
+            bucketConfiguration.getAnnotation(BucketConfig.class).entities();
+        } catch (MirroredTypesException ex) {
             List<TypeMirror> typeMirrors = (List<TypeMirror>) ex.getTypeMirrors();
 
-            if(typeMirrors != null) {
+            if (typeMirrors != null) {
                 entities = new String[typeMirrors.size()];
                 for (int i = 0; i < entities.length; i++) {
                     entities[i] = typeMirrors.get(i).toString() + ".class";
@@ -78,35 +83,61 @@ public class BucketProcessor extends AbstractProcessor {
 
         }
 
-        FieldSpec managerInstanceField = FieldSpec.builder(BucketDatabaseManager.class, "managerInstance", Modifier.PRIVATE, Modifier.STATIC).build();
+        FieldSpec managerInstanceField = FieldSpec.builder(BucketDatabaseManager.class, "bucketManager", Modifier.PRIVATE, Modifier.FINAL).build();
+        FieldSpec singletonInstance = FieldSpec.builder(ClassName.bestGuess("AppBucketImpl"), "instance", Modifier.PRIVATE, Modifier.STATIC).build();
 
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("getInstance")
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .beginControlFlow("if(managerInstance == null)")
-                .addCode("  managerInstance = $T\n" +
+
+
+        List<FieldSpec> baosFields = new ArrayList<>();
+        List<MethodSpec> baosGetters = Collections.emptyList();
+
+
+        MethodSpec.Builder mainConstructor = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .addCode("  bucketManager = $T\n" +
                         "                .newInstance()\n"
-                        +"                .declare()\n", BucketDatabase.class);
+                        + "                .declare()\n", BucketDatabase.class);
 
         if (entities != null) {
-            for (String entity :
-                    entities) {
-                methodBuilder.addCode("                .createCollection("+entity+")\n");
+            for (String entity : entities) {
+                mainConstructor.addCode("                .createCollection(" + entity + ")\n");
             }
         }
 
+        mainConstructor.addCode("                .end();\n", BucketDatabase.class);
 
-        methodBuilder.addCode(
-                "                .end();\n", BucketDatabase.class)
+        for (Element baoElement:baos) {
+
+            ((DeclaredType)((TypeElement) baoElement).getSuperclass()).getTypeArguments();
+            String modelClassName  = ((DeclaredType)((TypeElement) baoElement).getSuperclass()).getTypeArguments().get(0).toString();
+            String baoClassName = ((TypeElement) baoElement).getQualifiedName().toString();
+            String baoFieldName = ((TypeElement) baoElement).getSimpleName().toString();
+            baoFieldName = baoFieldName.substring(0,1).toLowerCase() + baoFieldName.substring(1);
+
+            FieldSpec baoFieldSpec = FieldSpec.builder(ClassName.bestGuess(baoClassName),baoFieldName,Modifier.PUBLIC).build();
+
+            mainConstructor.addCode(baoFieldSpec.name + " = new "+baoFieldSpec.type+"(bucketManager,"+modelClassName+".class);\n");
+            baosFields.add(baoFieldSpec);
+        }
+
+
+        MethodSpec.Builder methodInstanceBuilder = MethodSpec.methodBuilder("getInstance")
+                .addModifiers(Modifier.STATIC,Modifier.PUBLIC)
+                .beginControlFlow("if(instance == null)")
+                .addCode("  instance = new AppBucketImpl();\n")
                 .endControlFlow()
-                .addCode("return managerInstance;\n")
-                .returns(BucketDatabaseManager.class)
-                .build();
+                .addCode("return instance;\n")
+                .returns(ClassName.bestGuess("AppBucketImpl"));
 
 
-        TypeSpec bucketClass = TypeSpec.classBuilder(element.getSimpleName() + "Impl")
+
+        TypeSpec bucketClass = TypeSpec.classBuilder(bucketConfiguration.getSimpleName() + "Impl")
                 .addField(managerInstanceField)
-                .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
-                .addMethod(methodBuilder.build())
+                .addField(singletonInstance)
+                .addFields(baosFields)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addMethod(mainConstructor.build())
+                .addMethod(methodInstanceBuilder.build())
                 .build();
 
 
@@ -119,73 +150,6 @@ public class BucketProcessor extends AbstractProcessor {
             e.printStackTrace();
         }
 
-    }
-
-    private void writeBuilderFile(String className, Map<String, String> setterMap) throws IOException {
-
-        String packageName = null;
-        int lastDot = className.lastIndexOf('.');
-        if (lastDot > 0) {
-            packageName = className.substring(0, lastDot);
-        }
-
-        String simpleClassName = className.substring(lastDot + 1);
-        String builderClassName = className + "Builder";
-        String builderSimpleClassName = builderClassName.substring(lastDot + 1);
-
-        JavaFileObject builderFile = processingEnv.getFiler().createSourceFile(builderClassName);
-        try (PrintWriter out = new PrintWriter(builderFile.openWriter())) {
-
-            if (packageName != null) {
-                out.print("package ");
-                out.print(packageName);
-                out.println(";");
-                out.println();
-            }
-
-            out.print("public class ");
-            out.print(builderSimpleClassName);
-            out.println(" {");
-            out.println();
-
-            out.print("    private ");
-            out.print(simpleClassName);
-            out.print(" object = new ");
-            out.print(simpleClassName);
-            out.println("();");
-            out.println();
-
-            out.print("    public ");
-            out.print(simpleClassName);
-            out.println(" build() {");
-            out.println("        return object;");
-            out.println("    }");
-            out.println();
-
-            setterMap.entrySet().forEach(setter -> {
-                String methodName = setter.getKey();
-                String argumentType = setter.getValue();
-
-                out.print("    public ");
-                out.print(builderSimpleClassName);
-                out.print(" ");
-                out.print(methodName);
-
-                out.print("(");
-
-                out.print(argumentType);
-                out.println(" value) {");
-                out.print("        object.");
-                out.print(methodName);
-                out.println("(value);");
-                out.println("        return this;");
-                out.println("    }");
-                out.println();
-            });
-
-            out.println("}");
-
-        }
     }
 
 }

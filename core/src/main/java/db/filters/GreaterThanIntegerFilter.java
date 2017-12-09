@@ -1,4 +1,4 @@
-package filters;
+package db.filters;
 
 import java.lang.reflect.Field;
 

@@ -12,38 +12,31 @@ import processor.BucketProcessor;
 import java.util.LinkedList;
 
 
-
 public class Main {
 
-    private BucketProcessor processor;
+    private static AppBucketImpl bucket;
 
     public static void main(String[] args) {
-	// write your code here
+        // write your code here
 
 
-
-        BucketDatabaseManager dbManager = AppBucketImpl.getInstance();
-
+        bucket = AppBucketImpl.getInstance();
 
 
+        System.out.println(bucket.userBao.insert(new User("Andrei", 20)));
 
-        System.out.println(dbManager.where(User.class)
-                .insert(new User("Andrei", 20)));
+        System.out.println(bucket.userBao.insert(new User("Daniel", 25)));
 
-        System.out.println(dbManager.where(User.class)
-                .insert(new User("Daniel", 25)));
-
-        System.out.println(dbManager.where(User.class)
-                .insert(new User("Alexandru", 30)));
+        System.out.println(bucket.userBao.insert(new User("Alexandru", 30)));
 
 
-        System.out.println(dbManager.where(User.class)
-                .insert(new User("Andrei", 28)));
+        System.out.println(bucket.userBao.insert(new User("Andrei", 28)));
 
 
-        LinkedList<User> usersWithAndreiName = dbManager.where(User.class)
-                .equalsTo("name","Andrei")
-                .equalsTo("age",28)
+        LinkedList<User> usersWithAndreiName = bucket.userBao
+                .query()
+                .equalsTo("name", "Andrei")
+                .equalsTo("age", 28)
                 .find();
 
 
@@ -53,7 +46,7 @@ public class Main {
         }
 
 
-        LinkedList<User> userThatStartsWithA = dbManager.where(User.class)
+        LinkedList<User> userThatStartsWithA = bucket.userBao.query()
                 .filter(user -> user.getName().startsWith("A"))
                 .find();
 
@@ -64,13 +57,12 @@ public class Main {
         }
 
 
-
-        LinkedList<User> userWithAgeLessThan = dbManager.where(User.class)
-                .lesserThan("age",26)
+        LinkedList<User> userWithAgeLessThan = bucket.userBao.query()
+                .lesserThan("age", 26)
                 .find();
 
 
-        System.out.println("Users with age less than "+ 26);
+        System.out.println("Users with age less than " + 26);
 
 
         for (User user :
@@ -78,19 +70,18 @@ public class Main {
             System.out.println(user.getName() + " is " + user.getAge() + " old");
         }
 
-        LinkedList<User> userWithAgeGreatThan = dbManager.where(User.class)
-                .greaterThan("age",26)
+        LinkedList<User> userWithAgeGreatThan = bucket.userBao.query()
+                .greaterThan("age", 26)
                 .find();
 
 
-        System.out.println("Users with age great than "+ 26);
+        System.out.println("Users with age great than " + 26);
 
 
         for (User user :
                 userWithAgeGreatThan) {
             System.out.println(user.getName() + " is " + user.getAge() + " old");
         }
-
 
 
     }

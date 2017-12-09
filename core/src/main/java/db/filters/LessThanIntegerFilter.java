@@ -1,11 +1,11 @@
-package filters;
+package db.filters;
 
 import java.lang.reflect.Field;
 
-public class LesserThanIntegerFilter extends BaseFilter {
+public class LessThanIntegerFilter extends BaseFilter {
     private final int value;
 
-    public LesserThanIntegerFilter(String fieldValue, int value) {
+    public LessThanIntegerFilter(String fieldValue, int value) {
         super(fieldValue);
         this.value = value;
     }

@@ -1,4 +1,4 @@
-package filters;
+package db.filters;
 
 public abstract class BaseFilter {
     private final String fieldName;

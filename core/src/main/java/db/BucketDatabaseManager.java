@@ -1,6 +1,6 @@
 package db;
 
-import filters.*;
+import db.filters.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -37,17 +37,17 @@ public class BucketDatabaseManager {
         }
 
 
-        public FilterBuilder<E> greaterThan(String fieldName, int value){
+        public FilterBuilder<E> greaterThan(String fieldName, int value) {
             return new FilterBuilder<E>(new GreaterThanIntegerFilter(fieldName, value), collectionName);
         }
 
-        public FilterBuilder<E> lesserThan(String fieldName, int value){
-            return new FilterBuilder<E>(new LesserThanIntegerFilter(fieldName, value), collectionName);
+        public FilterBuilder<E> lesserThan(String fieldName, int value) {
+            return new FilterBuilder<E>(new LessThanIntegerFilter(fieldName, value), collectionName);
         }
 
 
         public PredicateFilterBuilder<E> filter(Predicate<E> predicate) {
-            return new PredicateFilterBuilder<E>(predicate,collectionName);
+            return new PredicateFilterBuilder<E>(predicate, collectionName);
         }
 
 
@@ -64,6 +64,23 @@ public class BucketDatabaseManager {
             }
             return list.add(object);
 
+        }
+
+        public boolean delete(E object) {
+            if (object.getClass() != collectionName) {
+                throw new RuntimeException("Invalid object type " + object.getClass().getName() + " for collection " + collectionName.getName());
+            }
+            List list = bucketDatabase.getDatabaseSource()
+                    .getListHolder().get(collectionName);
+
+
+            if (list == null) {
+                throw new RuntimeException("Collection " + collectionName.getName() + " does not exist!");
+            }
+            if (list.contains(object)) {
+                return list.remove(object);
+            }
+            return false;
         }
     }
 
@@ -118,13 +135,13 @@ public class BucketDatabaseManager {
             return this;
         }
 
-        public FilterBuilder<E> greaterThan(String fieldName, int value){
-            filters.add(new GreaterThanIntegerFilter(fieldName,value));
+        public FilterBuilder<E> greaterThan(String fieldName, int value) {
+            filters.add(new GreaterThanIntegerFilter(fieldName, value));
             return this;
         }
 
-        public FilterBuilder<E> lesserThan(String fieldName, int value){
-            filters.add(new LesserThanIntegerFilter(fieldName,value));
+        public FilterBuilder<E> lesserThan(String fieldName, int value) {
+            filters.add(new LessThanIntegerFilter(fieldName, value));
             return this;
         }
 

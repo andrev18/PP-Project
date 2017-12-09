@@ -1,4 +1,7 @@
-annotations/BAO.class
 processor/BucketProcessor.class
 annotations/BucketConfig.class
 annotations/BucketEntity.class
+annotations/Insert.class
+annotations/BAO.class
+annotations/Delete.class
+model/BaoHolder.class
