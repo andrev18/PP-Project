@@ -20,6 +20,10 @@ import com.squareup.javapoet.*;
 import db.BucketDatabase;
 import db.BucketDatabaseManager;
 
+
+/**
+ * Annotation processor for configurating Bucket Files
+ */
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 @AutoService(Processor.class)
 public class BucketProcessor extends AbstractProcessor {
@@ -55,7 +59,6 @@ public class BucketProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> annotataions = new LinkedHashSet<String>();
-        annotataions.add(BucketEntity.class.getCanonicalName());
         annotataions.add(BAO.class.getCanonicalName());
         annotataions.add(BucketConfig.class.getCanonicalName());
         return annotataions;

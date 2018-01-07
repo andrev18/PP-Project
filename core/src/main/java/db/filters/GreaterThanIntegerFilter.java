@@ -2,6 +2,9 @@ package db.filters;
 
 import java.lang.reflect.Field;
 
+/**
+ * Implementation of GreaterThanIntegerFilter.
+ */
 public class GreaterThanIntegerFilter extends BaseFilter {
     private final int value;
 

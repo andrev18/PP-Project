@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
-/*
-    BucketConfig Access Object annotation
+/**
+ * Define Accees object for bucket list.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)

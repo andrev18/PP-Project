@@ -7,6 +7,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 
+
+/**
+ * Object for accessing the database.
+ * It defines query builder.
+ */
 public class BucketDatabaseManager {
     private final BucketDatabase bucketDatabase;
 
@@ -19,6 +24,10 @@ public class BucketDatabaseManager {
         return new QueryBuilder<E>(collectionName);
     }
 
+    /**
+     * Builder class which offers access to other builders.
+     * @param <E>
+     */
 
     public class QueryBuilder<E> {
         private final Class<E> collectionName;
@@ -84,6 +93,11 @@ public class BucketDatabaseManager {
         }
     }
 
+
+    /**
+     * Builder class for defining custom filter using callbacks called Predicate.
+     * @param <E>
+     */
     public class PredicateFilterBuilder<E> {
         private final Predicate<E> predicate;
         private final Class collectionName;
@@ -115,6 +129,10 @@ public class BucketDatabaseManager {
         }
     }
 
+    /**
+     * Builder class for defining Builder which extends BaseFilter class
+     * @param <E>
+     */
     public class FilterBuilder<E> {
         private final ArrayList<BaseFilter> filters = new ArrayList<>();
         private final Class collectionName;

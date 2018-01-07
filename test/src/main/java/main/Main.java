@@ -20,6 +20,17 @@ public class Main {
         // write your code here
 
 
+
+        try{
+            throw  new Exception("DSADSA");
+
+        }catch ( Exception e){
+            System.out.println("EXCEPTION CATCH");
+
+        }finally {
+            System.out.println("FInally called");
+        }
+
         bucket = AppBucketImpl.getInstance();
 
 

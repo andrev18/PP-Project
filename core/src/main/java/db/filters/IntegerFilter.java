@@ -2,6 +2,9 @@ package db.filters;
 
 import java.lang.reflect.Field;
 
+/**
+ * Implementation of EqualWithIntegerFilter.
+ */
 public class IntegerFilter extends BaseFilter {
     private final int value;
 

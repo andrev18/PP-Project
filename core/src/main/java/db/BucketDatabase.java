@@ -2,7 +2,10 @@ package db;
 
 import java.util.LinkedList;
 
-public class BucketDatabase {
+/**
+ * Implementation of BucketDatabase
+ */
+public final class BucketDatabase {
     private final DatabaseConfiguration databaseConfiguration;
     private final HashList databaseSource = new HashList();
 

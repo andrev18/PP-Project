@@ -2,6 +2,9 @@ package db;
 
 import java.util.HashSet;
 
+/**
+ * Helper object for defining the configuration for database.
+ */
 public class DatabaseConfiguration {
     private final HashSet<Class> databaseClasses = new HashSet<>();
 

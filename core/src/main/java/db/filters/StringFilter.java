@@ -3,6 +3,9 @@ package db.filters;
 
 import java.lang.reflect.Field;
 
+/**
+ * Implementation of EqualWithStringFilter.
+ */
 public class StringFilter extends BaseFilter {
     private final String value;
 
