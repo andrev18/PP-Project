@@ -2,8 +2,9 @@ package db.filters;
 
 import java.lang.reflect.Field;
 
+
 /**
- * Implementation of GreaterThanIntegerFilter.
+ * Filter for evaluating ">" for integer values
  */
 public class GreaterThanIntegerFilter extends BaseFilter {
     private final int value;

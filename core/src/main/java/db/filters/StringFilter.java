@@ -4,7 +4,7 @@ package db.filters;
 import java.lang.reflect.Field;
 
 /**
- * Implementation of EqualWithStringFilter.
+ * Filter for evaluating "equal" for string values
  */
 public class StringFilter extends BaseFilter {
     private final String value;

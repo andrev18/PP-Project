@@ -3,7 +3,7 @@ package db.filters;
 import java.lang.reflect.Field;
 
 /**
- * Implementation of LessThanIntegerFilter.
+ * Filter for evaluating "<" for integer values
  */
 public class LessThanIntegerFilter extends BaseFilter {
     private final int value;

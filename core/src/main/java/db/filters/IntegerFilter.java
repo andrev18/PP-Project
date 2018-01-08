@@ -3,7 +3,7 @@ package db.filters;
 import java.lang.reflect.Field;
 
 /**
- * Implementation of EqualWithIntegerFilter.
+ * Filter for evaluating "=" for intege values
  */
 public class IntegerFilter extends BaseFilter {
     private final int value;
